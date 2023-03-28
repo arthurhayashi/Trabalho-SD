@@ -1,9 +1,11 @@
 import threading
 from tkinter import *
 from tkinter import simpledialog
+from tkinter.ttk import Button
 
 import grpc
 
+import tkinter as tk
 import proto.chat_pb2 as chat
 import proto.chat_pb2_grpc as rpc
 
@@ -34,17 +36,31 @@ class Client:
             print("R[{}] {}".format(note.name, note.message))  # debugging statement
             self.chat_list.insert(END, "[{}] {}\n".format(note.name, note.message))  # add the message to the UI
 
-    def send_message(self, event):
+    def send_message(self, msg):
         """
         This method is called when user enters something into the textbox
         """
         message = self.entry_message.get()  # retrieve message from the UI
+        self.entry_message.delete(0, END)
         if message is not '':
             n = chat.Note()  # create protobug message (called Note)
             n.name = self.username  # set the username
             n.message = message  # set the actual message of the note
             print("S[{}] {}".format(n.name, n.message))  # debugging statement
             self.conn.SendNote(n)  # send the Note to the server
+        if msg == username:
+            n = chat.Note()  # create protobug message (called Note)
+            n.name = self.username  # set the username
+            n.message = str(self.username + ' Saiu')  # set the actual message of the note
+            print("S[{}] {}".format(n.name, n.message))  # debugging statement
+            self.conn.SendNote(n)  # send the Note to the server
+        
+
+    def close_window(self):
+        self.entry_message.bind('<Return>', self.send_message(username))
+        self.entry_message.delete(0, END)
+        root.destroy()
+        
 
     def __setup_ui(self):
         self.chat_list = Text()
@@ -56,7 +72,7 @@ class Client:
         self.entry_message.focus()
         self.entry_message.pack(side=BOTTOM)
         
-        Button(root,text="Quit", command=root.destroy).pack() #button to close the window
+        Button(root,text="Quit", command=self.close_window).pack() #button to close the window
 
 
 

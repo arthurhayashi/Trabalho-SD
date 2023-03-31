@@ -15,14 +15,7 @@ class ChatServer(rpc.ChatServerServicer):  # inheriting here from the protobuf r
 
     # The stream which will be used to send new messages to clients
     def ChatStream(self, request_iterator, context):
-        """
-        This is a response-stream type call. This means the server can keep sending messages
-        Every client opens this connection and waits for server to send new messages
 
-        :param request_iterator:
-        :param context:
-        :return:
-        """
         lastindex = 0
         # For every client a infinite loop starts (in gRPC's own managed thread)
         while True:
@@ -33,19 +26,11 @@ class ChatServer(rpc.ChatServerServicer):  # inheriting here from the protobuf r
                 yield n
 
     def SendNote(self, request: chat.Note, context):
-        """
-        This method is called when a clients sends a Note to the server.
 
-        :param request:
-        :param context:
-        :return:
-        """
-        # this is only for the server console
         print("[{}] {}".format(request.name, request.message))
         # Add it to the chat history
         self.chats.append(request)
         return chat.Empty()  # something needs to be returned required by protobuf language, we just return empty msg
-
 
 if __name__ == '__main__':
     port = 11912  # a random port for the server to run on

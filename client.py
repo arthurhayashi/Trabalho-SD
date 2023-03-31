@@ -28,18 +28,11 @@ class Client:
         self.window.mainloop()
 
     def __listen_for_messages(self):
-        """
-        This method will be ran in a separate thread as the main/ui thread, because the for-in call is blocking
-        when waiting for new messages
-        """
         for note in self.conn.ChatStream(chat.Empty()):  # this line will wait for new messages from the server!
             print("R[{}] {}".format(note.name, note.message))  # debugging statement
             self.chat_list.insert(END, "[{}] {}\n".format(note.name, note.message))  # add the message to the UI
 
     def send_message(self, msg):
-        """
-        This method is called when user enters something into the textbox
-        """
         message = self.entry_message.get()  # retrieve message from the UI
         self.entry_message.delete(0, END)
         if message is not '':
